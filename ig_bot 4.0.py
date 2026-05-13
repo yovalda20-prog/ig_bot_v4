@@ -61,7 +61,7 @@ RR_MAX_THRESHOLD = 1.8
 
 # ──── DEVELOPER SETTINGS ──────────────────────────────────────────────────────
 DEBUG_MODE = True  # שנה ל-False כשאתה מריץ "על אמת"
-# תיקייה שתשמור את החיבור שלך לאינסטגרם (כדי שלא תצטרך להתחבר כל פעם)
+# תיקייה שתשמור את החיבור שלך לאינסטגרם
 CHROME_PROFILE_PATH = str(Path.home() / "IG_Bot_Dev_Profile")
 
 
@@ -118,7 +118,7 @@ FOLLOWING_CHECK_XPATHS = [
     "//button[normalize-space(text())='Following' or normalize-space(text())='Requested']",
     "//button[normalize-space()='Following' or normalize-space()='Requested']",
     "//*[@role='button'][normalize-space()='Following']",
-]  # <--- סוגר את הרשימה הקודמת כאן
+] 
 
 FOLLOWERS_YOU_XPATHS = [
     # Instagram shows "Follows you" badge next to the username on their profile
