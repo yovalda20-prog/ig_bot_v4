@@ -1,4 +1,4 @@
-[Instagram_Bot_v4_Guide.html](https://github.com/user-attachments/files/27727553/Instagram_Bot_v4_Guide.html)
+
 
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
