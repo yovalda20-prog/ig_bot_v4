@@ -60,8 +60,10 @@ RR_MIN_THRESHOLD = 1.2
 RR_MAX_THRESHOLD = 1.8
 
 # ──── DEVELOPER SETTINGS ──────────────────────────────────────────────────────
+# ──── DEVELOPER SETTINGS ──────────────────────────────────────────────────────
 DEBUG_MODE = True  # שנה ל-False כשאתה מריץ "על אמת"
-# תיקייה שתשמור את החיבור שלך לאינסטגרם
+ENABLE_HEALTH_CHECKS = False  # <--- הדגל החדש שלך! שנה ל-True כשאתה רוצה להחזיר את הבדיקה
+# תיקייה שתשמור את החיבור שלך לאינסטגרם (כדי שלא תצטרך להתחבר כל פעם)
 CHROME_PROFILE_PATH = str(Path.home() / "IG_Bot_Dev_Profile")
 
 
@@ -118,7 +120,7 @@ FOLLOWING_CHECK_XPATHS = [
     "//button[normalize-space(text())='Following' or normalize-space(text())='Requested']",
     "//button[normalize-space()='Following' or normalize-space()='Requested']",
     "//*[@role='button'][normalize-space()='Following']",
-] 
+]  # <--- סוגר את הרשימה הקודמת כאן
 
 FOLLOWERS_YOU_XPATHS = [
     # Instagram shows "Follows you" badge next to the username on their profile
@@ -508,7 +510,7 @@ def build_driver() -> uc.Chrome:
 
     try:
         # עכשיו ה-driver ידע ללכת ישר לגרסה 148 בנתיב שהגדרנו למעלה
-        driver = uc.Chrome(options=options, headless=False)
+        driver = uc.Chrome(options=options, version_main=148)
         log.info(f"Driver started with persistent profile: {CHROME_PROFILE_PATH}")
         return driver
     except Exception as e:
@@ -1526,6 +1528,12 @@ def check_bot_health(driver: uc.Chrome) -> bool:
     ניווט לפרופיל האישי ובדיקת יחס עוקבים/נעקבים (RR).
     מחזיר False אם חרגנו מהרף (לעצור עוקבים), True אם הכל תקין.
     """
+    # --- הוספת "שער הכניסה" החדש ---
+    if not ENABLE_HEALTH_CHECKS:
+        log.info("Self-health check skipped (disabled by developer).")
+        return True
+    # -------------------------------
+
     log.info(f"Checking self-health for account...")
     try:
         # ניווט חכם דרך תפריט הצד כדי למנוע דף לבן
@@ -1538,6 +1546,7 @@ def check_bot_health(driver: uc.Chrome) -> bool:
             profile_btn = WebDriverWait(driver, 12).until(
                 EC.element_to_be_clickable((By.XPATH, sidebar_profile_xpath))
             )
+            
             safe_click(driver, profile_btn)
             log.info("Successfully clicked profile button.")
         except Exception as e:
@@ -1608,8 +1617,8 @@ def run_batch(
     for username in batch:
         # ── Pre-user checks (follow mode only) ────────────────────────────────
         if not scout_mode:
-            # Probabilistic self-health check (~20 % of users)
-            if random.random() < 0.20:
+            # Probabilistic self-health check (~20 % of users) - מותנה בדגל מפתח
+            if ENABLE_HEALTH_CHECKS and random.random() < 0.20:
                 if not check_bot_health(driver):
                     log.info("Self-correction: RR too high — ending batch.")
                     return "__RR_LIMIT_REACHED__"
