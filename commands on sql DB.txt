@@ -1,0 +1,97 @@
+============================================================
+       דף פקודות שימושיות ל-DB של בוט האינסטגרם (SQLite3)
+============================================================
+
+* חשוב: יש לוודא שנמצאים בטרמינל בתוך התיקייה שבה נמצא קובץ ה-/backup_scripts+DB לפני הרצת הפקודות.
+
+------------------------------------------------------------
+1. פקודת הקיצור המהירה (הרצה ישירות מהטרמינל הרגיל של קאלי)
+------------------------------------------------------------
+להדפסת סיכום מהיר של כמות המשתמשים בכל סטטוס (בלי להיכנס לממשק של SQLite):
+
+sqlite3 ig_bot.db -column -header "SELECT status, COUNT(*) FROM users_status GROUP BY status;"
+
+
+------------------------------------------------------------
+2. התחברות מלאה וכניסה לממשק ה-DB
+------------------------------------------------------------
+כניסה למצב אינטראקטיבי:
+sqlite3 ig_bot.db
+
+* פקודות לעיצוב הפלט (חובה להריץ מיד כשנכנסים כדי שהטבלה תהיה קריאה):
+.headers on
+.mode column
+
+
+------------------------------------------------------------
+3. שאילתות SQL שימושיות (להרצה בתוך ממשק ה-sqlite>)
+------------------------------------------------------------
+
+א. לראות סיכום וכמויות של כל הסטטוסים (כמה סרוקים, כמה נעקבו וכו'):
+SELECT status, COUNT(*) FROM users_status GROUP BY status;
+
+ב. לראות את רשימת כל המשתמשים ב-DB והנתונים שלהם:
+SELECT * FROM users_status;
+
+ג. לבדוק מה המצב של משתמש ספציפי (להחליף את 'username' בשם הרצוי):
+SELECT * FROM users_status WHERE username = 'username';
+
+ד. להציג רק משתמשים שנמצאים בסטטוס ספציפי (למשל, רק אלו שעקבנו אחריהם - FOLLOWED):
+SELECT * FROM users_status WHERE status = 'FOLLOWED';
+
+
+------------------------------------------------------------
+4. יציאה חזרה לטרמינל של קאלי
+------------------------------------------------------------
+סגירת החיבור ל-DB וחזרה לטרמינל הרגיל:
+.exit
+------------------------------------------------------------
+5. מעקב אחרי מי שהחזיר עוקב (סטטוס FRIEND)
+------------------------------------------------------------
+
+א. פקודת קיצור מהטרמינל (בשורה אחת) - לראות כמה אנשים החזירו עוקב סך הכל:
+sqlite3 ig_bot.db "SELECT COUNT(*) AS 'Total Friends' FROM users_status WHERE status = 'FRIEND';"
+
+ב. בתוך ממשק ה-sqlite> - להציג את רשימת כל המשתמשים שהחזירו עוקב ומתי זה עודכן:
+SELECT username, last_action_date FROM users_status WHERE status = 'FRIEND' ORDER BY last_action_date DESC;
+
+ג. בתוך ממשק ה-sqlite> - להציג את מי שעקבנו אחריו ועדיין לא החזיר עוקב (מטרות פוטנציאליות ל-Unfollow בהמשך):
+SELECT username, last_action_date FROM users_status WHERE status = 'FOLLOWED' ORDER BY last_action_date ASC;
+
+
+------------------------------------------------------------
+6. בונוס: אחוז המרה (Conversion Rate)
+------------------------------------------------------------
+רוצה לדעת כמה הבוט יעיל באחוזים? השאילתה הזו מחשבת כמה אחוזים מתוך מי שאי פעם עקבת אחריו (FOLLOWED + FRIEND + UNFOLLOWED) באמת החזיר לך עוקב:
+
+SELECT 
+    ROUND(
+        (COUNT(CASE WHEN status = 'FRIEND' THEN 1 END) * 100.0) / 
+        NULLIF(COUNT(CASE WHEN status IN ('FOLLOWED', 'FRIEND', 'UNFOLLOWED') THEN 1 END), 0), 
+        2
+    ) AS 'Success Rate (%)'
+FROM users_status;
+
+
+
+mail proton:
+kfir.levi@proton.me
+
+Password:
+*>mU7W]q)i4iye>
+
+SimpleLogin + instegram login
+ido.lifestyle.2026.deafness067@aleeas.com
+
+Password:
+f_kA"):'C*f4'u"
+
+birthday:
+2.6.2001
+
+username:
+ido.lifestyle.2026
+
+api key:
+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
+
