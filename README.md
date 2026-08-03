@@ -34,16 +34,7 @@ How It Works — Overview
 
 Recommended Project Structure:
 
-instagram-growth-bot/
-├── ig_bot.py
-├── requirements.txt
-├── README.md
-├── xpath_cache.json          # auto-generated
-├── bot.log                   # auto-generated
-├── scout_report.txt
-├── filtered_users.txt
-└── backup_scripts+DB/
-    └── ig_bot.db
+
 
 
 ---
